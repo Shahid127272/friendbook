@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "397401497179",
+    "project_id": "friendbook-ff2c5",
+    "storage_bucket": "friendbook-ff2c5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:397401497179:android:d2c0706bfe9be1ba78697e",
+        "android_client_info": {
+          "package_name": "com.example.classico"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-mcAqYC8IvvjsUmqZpTLc4U06aB8z1_A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:397401497179:android:ead9738f1b7b81f378697e",
+        "android_client_info": {
+          "package_name": "com.friendbook.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-mcAqYC8IvvjsUmqZpTLc4U06aB8z1_A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
