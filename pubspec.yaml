@@ -5,7 +5,7 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.9.2
+  sdk: ">=3.3.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -16,26 +16,33 @@ dependencies:
   # -----------------------------
   # 🔥 Firebase Dependencies
   # -----------------------------
-  firebase_core: ^2.25.0
-  firebase_auth: ^4.17.8
-  cloud_firestore: ^4.15.8
-  firebase_storage: ^11.6.9
-  firebase_analytics: ^10.7.1
+  firebase_core: ^2.32.0
+  firebase_auth: ^4.20.0
+  cloud_firestore: ^4.17.5
+  firebase_storage: ^11.7.7
+  firebase_analytics: ^10.10.7
 
   # -----------------------------
-  # 🔥 App Dependencies
+  # 🔥 State Management
   # -----------------------------
-  provider: ^6.0.5
+  provider: ^6.1.2
+
+  # -----------------------------
+  # 🔥 Utilities
+  # -----------------------------
+  intl: ^0.19.0
+  image_picker: ^1.1.2
   dio: ^5.4.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
   flutter_lints: ^5.0.0
   flutter_launcher_icons: ^0.13.1
 
 flutter_launcher_icons:
-  android: "launcher_icon"
+  android: true
   ios: true
   image_path: "assets/icon.png"
   remove_alpha_ios: true

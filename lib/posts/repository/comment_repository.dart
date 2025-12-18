@@ -1,45 +1,54 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:friendbook/posts/models/comment_model.dart';
-import 'package:friendbook/services/post_service.dart';
 
 class CommentRepository {
-  final PostService _postService = PostService();
+  final FirebaseFirestore _firestore =
+      FirebaseFirestore.instance;
 
   /// --------------------------------------------------
-  /// Get all comments of a specific post
+  /// FETCH COMMENTS OF A POST
   /// --------------------------------------------------
-  Future<List<CommentModel>> getComments(String postId) async {
+  Future<List<CommentModel>> fetchComments(String postId) async {
     try {
-      final data = await _postService.getComments(postId);
+      final snapshot = await _firestore
+          .collection('posts')
+          .doc(postId)
+          .collection('comments')
+          .orderBy('createdAt', descending: true)
+          .get();
 
-      // JSON → List<CommentModel>
-      return data
-          .map<CommentModel>((json) => CommentModel.fromJson(json))
+      return snapshot.docs
+          .map(
+            (doc) => CommentModel.fromMap(doc.data()),
+      )
           .toList();
     } catch (e) {
-      print("REPOSITORY GET COMMENTS ERROR: $e");
+      debugPrint("REPOSITORY FETCH COMMENTS ERROR: $e");
       rethrow;
     }
   }
 
   /// --------------------------------------------------
-  /// Add a new comment
+  /// ADD A NEW COMMENT
   /// --------------------------------------------------
-  Future<CommentModel> addComment({
+  Future<void> addComment({
     required String postId,
     required String userId,
     required String text,
   }) async {
     try {
-      final data = await _postService.addComment(
-        postId: postId,
-        userId: userId,
-        text: text,
-      );
-
-      // JSON → CommentModel
-      return CommentModel.fromJson(data);
+      await _firestore
+          .collection('posts')
+          .doc(postId)
+          .collection('comments')
+          .add({
+        'userId': userId,
+        'text': text,
+        'createdAt': Timestamp.now(),
+      });
     } catch (e) {
-      print("REPOSITORY ADD COMMENT ERROR: $e");
+      debugPrint("REPOSITORY ADD COMMENT ERROR: $e");
       rethrow;
     }
   }

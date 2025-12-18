@@ -1,14 +1,26 @@
-Widget _buildPostCard(PostModel post) {
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
+
+import '../model/post_model.dart';
+import '../provider/post_provider.dart';
+import 'comments_screen.dart';
+
+Widget _buildPostCard(BuildContext context, PostModel post) {
   return Card(
     elevation: 3,
     margin: const EdgeInsets.only(bottom: 14),
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+    ),
     child: Padding(
       padding: const EdgeInsets.all(14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          /// User ID
+          /// =========================
+          /// USER ID
+          /// =========================
           Text(
             "User: ${post.userId}",
             style: const TextStyle(
@@ -19,7 +31,9 @@ Widget _buildPostCard(PostModel post) {
 
           const SizedBox(height: 8),
 
-          /// Post Content
+          /// =========================
+          /// POST CONTENT
+          /// =========================
           Text(
             post.content,
             style: const TextStyle(fontSize: 16),
@@ -27,21 +41,38 @@ Widget _buildPostCard(PostModel post) {
 
           const SizedBox(height: 10),
 
-          /// Post Image (optional)
+          /// =========================
+          /// POST IMAGE (OPTIONAL)
+          /// =========================
           if (post.imageUrl != null && post.imageUrl!.isNotEmpty)
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: Image.network(
                 post.imageUrl!,
                 fit: BoxFit.cover,
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return const Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                },
+                errorBuilder: (context, error, stackTrace) {
+                  return const Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Center(child: Icon(Icons.broken_image)),
+                  );
+                },
               ),
             ),
 
           const SizedBox(height: 10),
 
-          /// Date
+          /// =========================
+          /// POST DATE (FORMATTED)
+          /// =========================
           Text(
-            "Posted on: ${post.createdAt.toLocal()}",
+            "Posted on: ${DateFormat('dd MMM yyyy, hh:mm a').format(post.createdAt)}",
             style: TextStyle(
               fontSize: 12,
               color: Colors.grey.shade600,
@@ -50,9 +81,9 @@ Widget _buildPostCard(PostModel post) {
 
           const SizedBox(height: 12),
 
-          // ============================================
-          // LIKE BUTTON + LIKE COUNT
-          // ============================================
+          /// =========================
+          /// LIKE BUTTON + COUNT
+          /// =========================
           Row(
             children: [
               IconButton(
@@ -68,11 +99,10 @@ Widget _buildPostCard(PostModel post) {
 
                   provider.toggleLike(
                     post.id,
-                    "demo_user_123", // TODO: Replace with Firebase user ID
+                    "demo_user_123", // TODO: Firebase user ID
                   );
                 },
               ),
-
               Text(
                 "${post.likes.length} Likes",
                 style: const TextStyle(fontSize: 14),
@@ -82,9 +112,9 @@ Widget _buildPostCard(PostModel post) {
 
           const SizedBox(height: 6),
 
-          // ============================================
-          // COMMENTS BUTTON
-          // ============================================
+          /// =========================
+          /// COMMENTS BUTTON
+          /// =========================
           Row(
             children: [
               IconButton(

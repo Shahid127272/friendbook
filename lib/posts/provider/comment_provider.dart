@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+
 import 'package:friendbook/posts/models/comment_model.dart';
 import 'package:friendbook/posts/repository/comment_repository.dart';
 
-class CommentProvider with ChangeNotifier {
+class CommentProvider extends ChangeNotifier {
   final CommentRepository _commentRepository = CommentRepository();
 
   List<CommentModel> _comments = [];
@@ -17,21 +18,19 @@ class CommentProvider with ChangeNotifier {
   /// LOAD COMMENTS OF A POST
   /// -----------------------------------------------------
   Future<void> loadComments(String postId) async {
-    try {
-      _isLoading = true;
-      _errorMessage = null;
-      notifyListeners();
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
 
-      _comments = await _commentRepository.getComments(postId);
-      notifyListeners();
+    try {
+      _comments = await _commentRepository.fetchComments(postId);
     } catch (e) {
       _errorMessage = "Failed to load comments";
-      print("PROVIDER GET COMMENTS ERROR: $e");
-      notifyListeners();
-    } finally {
-      _isLoading = false;
-      notifyListeners();
+      debugPrint("PROVIDER LOAD COMMENTS ERROR: $e");
     }
+
+    _isLoading = false;
+    notifyListeners();
   }
 
   /// -----------------------------------------------------
@@ -43,18 +42,16 @@ class CommentProvider with ChangeNotifier {
     required String text,
   }) async {
     try {
-      final newComment = await _commentRepository.addComment(
+      await _commentRepository.addComment(
         postId: postId,
         userId: userId,
         text: text,
       );
 
-      // Add new comment at bottom
-      _comments.add(newComment);
-      notifyListeners();
-
+      // Reload comments to keep data in sync
+      await loadComments(postId);
     } catch (e) {
-      print("PROVIDER ADD COMMENT ERROR: $e");
+      debugPrint("PROVIDER ADD COMMENT ERROR: $e");
     }
   }
 }

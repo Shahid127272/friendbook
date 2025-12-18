@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 import 'package:friendbook/posts/provider/comment_provider.dart';
 import 'package:friendbook/posts/models/comment_model.dart';
@@ -20,28 +21,33 @@ class _CommentsScreenState extends State<CommentsScreen> {
   void initState() {
     super.initState();
 
-    /// Jab screen open ho → comments load ho jayein
-    Future.delayed(Duration.zero, () {
-      Provider.of<CommentProvider>(context, listen: false)
-          .loadComments(widget.postId);
+    /// ✅ Safe way to call Provider in initState
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<CommentProvider>().loadComments(widget.postId);
     });
   }
 
   @override
+  void dispose() {
+    _commentController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<CommentProvider>(context);
+    final provider = context.watch<CommentProvider>();
 
     return Scaffold(
       appBar: AppBar(
         title: const Text("Comments"),
         backgroundColor: Colors.deepPurple,
       ),
-
       body: Column(
         children: [
-          /// ------------------------------
-          /// Comments List
-          /// ------------------------------
+          /// ==========================
+          /// COMMENTS LIST
+          /// ==========================
           Expanded(
             child: provider.isLoading
                 ? const Center(child: CircularProgressIndicator())
@@ -51,7 +57,8 @@ class _CommentsScreenState extends State<CommentsScreen> {
               padding: const EdgeInsets.all(12),
               itemCount: provider.comments.length,
               itemBuilder: (context, index) {
-                final CommentModel c = provider.comments[index];
+                final CommentModel c =
+                provider.comments[index];
 
                 return Container(
                   margin: const EdgeInsets.only(bottom: 12),
@@ -73,7 +80,8 @@ class _CommentsScreenState extends State<CommentsScreen> {
                       Text(c.text),
                       const SizedBox(height: 6),
                       Text(
-                        c.createdAt.toLocal().toString(),
+                        DateFormat('dd MMM yyyy, hh:mm a')
+                            .format(c.createdAt),
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey.shade600,
@@ -86,11 +94,14 @@ class _CommentsScreenState extends State<CommentsScreen> {
             ),
           ),
 
-          /// ------------------------------
-          /// Add Comment Box
-          /// ------------------------------
+          /// ==========================
+          /// ADD COMMENT BOX
+          /// ==========================
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 8,
+            ),
             decoration: BoxDecoration(
               color: Colors.white,
               boxShadow: [
@@ -121,24 +132,29 @@ class _CommentsScreenState extends State<CommentsScreen> {
                 CircleAvatar(
                   backgroundColor: Colors.deepPurple,
                   child: IconButton(
-                    icon: const Icon(Icons.send, color: Colors.white),
+                    icon: const Icon(
+                      Icons.send,
+                      color: Colors.white,
+                    ),
                     onPressed: () async {
-                      final text = _commentController.text.trim();
+                      final text =
+                      _commentController.text.trim();
                       if (text.isEmpty) return;
 
                       await provider.addComment(
                         postId: widget.postId,
-                        userId: "demo_user_123", // TODO: Replace with real user ID
+                        userId: "demo_user_123", // TODO: Firebase UID
                         text: text,
                       );
 
+                      if (!mounted) return;
                       _commentController.clear();
                     },
                   ),
-                )
+                ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );

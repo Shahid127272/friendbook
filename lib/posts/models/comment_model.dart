@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class CommentModel {
   final String id;
   final String postId;
@@ -14,7 +16,7 @@ class CommentModel {
   });
 
   /// -----------------------------
-  /// JSON → Model
+  /// JSON → Model (API / old flow)
   /// -----------------------------
   factory CommentModel.fromJson(Map<String, dynamic> json) {
     return CommentModel(
@@ -22,7 +24,21 @@ class CommentModel {
       postId: json["postId"]?.toString() ?? "",
       userId: json["userId"]?.toString() ?? "",
       text: json["text"] ?? "",
-      createdAt: DateTime.tryParse(json["createdAt"] ?? "") ?? DateTime.now(),
+      createdAt:
+      DateTime.tryParse(json["createdAt"] ?? "") ?? DateTime.now(),
+    );
+  }
+
+  /// -----------------------------
+  /// FIRESTORE → Model (NEW FLOW)
+  /// -----------------------------
+  factory CommentModel.fromMap(Map<String, dynamic> map) {
+    return CommentModel(
+      id: map['id'] ?? '',
+      postId: map['postId'] ?? '',
+      userId: map['userId'] ?? '',
+      text: map['text'] ?? '',
+      createdAt: (map['createdAt'] as Timestamp).toDate(),
     );
   }
 
